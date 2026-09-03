@@ -40,18 +40,26 @@ namespace OpsControl.Api.Controllers
 
     };
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] string? status)
+        public async Task<IActionResult> Get([FromQuery] string? status,[FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
             IQueryable<Incident> query = _context.Incidents;
-
+            if (page < 1 || pageSize < 1 || pageSize > 100)
+            {
+                return BadRequest();
+            }
+         
             if (string.IsNullOrEmpty(status))
             {
+                query = query.OrderBy(x => x.Id).Skip((page - 1) * pageSize).Take(pageSize);
                 var allIncidents = await query.ToListAsync();
                 return Ok(allIncidents);
             }
             else
             {
-                var filterIncidents = await query.Where(x => x.Status == status).ToListAsync();
+                query = query.Where(x => x.Status == status);
+                query= query.OrderBy(x => x.Id).Skip((page - 1) * pageSize).Take(pageSize);
+
+                var filterIncidents = await query.ToListAsync();
                 return Ok(filterIncidents);
             }
 

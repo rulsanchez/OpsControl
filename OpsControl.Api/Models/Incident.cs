@@ -10,10 +10,4 @@
 
     }
 }
-//| Propiedad | Qué debe guardar                            |
-//| ------------- | ------------------------------------------- |
-//| `Id`          | El identificador numérico de la incidencia. |
-//| `Title`       | Su título.                                  |
-//| `Description` | La explicación del problema.                |
-//| `Status`      | Su estado; de momento, como texto.          |
-//| `CreatedAt`   | La fecha y hora de creación.                |
+
