@@ -4,7 +4,7 @@ GET {{OpsControl.Api_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
-
+GET https://localhost:7085/api/incidents/1
 ###
 POST https://localhost:7085/api/incidents
 Content-Type: application/json
@@ -13,4 +13,16 @@ Content-Type: application/json
   "title": "Incidencia creada desde la API",
   "description": "Primera prueba del endpoint POST."
 }
+###
+PUT https://localhost:7085/api/incidents/2
+Content-Type: application/json
+
+{
+  "title": "",
+  "description": "Primera prueba del endpoint POSTmodificadisima."
+}
+###
+
+DELETE https://localhost:7085/api/incidents/2
+
 ###

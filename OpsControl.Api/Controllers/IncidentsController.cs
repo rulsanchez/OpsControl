@@ -40,28 +40,69 @@ namespace OpsControl.Api.Controllers
 
     };
         [HttpGet]
-        public IActionResult Get([FromQuery] string? status)
+        public async Task<IActionResult> Get([FromQuery] string? status)
         {
+            IQueryable<Incident> query = _context.Incidents;
+
             if (string.IsNullOrEmpty(status))
             {
-                return Ok(_incidents);
+                var allIncidents = await query.ToListAsync();
+                return Ok(allIncidents);
             }
             else
             {
-                return Ok(_incidents.Where(x => string.Equals(x.Status, status, StringComparison.OrdinalIgnoreCase)).ToList());
+                var filterIncidents = await query.Where(x => x.Status == status).ToListAsync();
+                return Ok(filterIncidents);
             }
-            
+
 
         }
 
+
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateIncidentRequest request)
+        {
+            var incidentToUpdate = await _context.Incidents.Where(x => x.Id == id).FirstOrDefaultAsync();
+            if (incidentToUpdate != null)
+            {
+                incidentToUpdate.Title = request.Title;
+                incidentToUpdate.Description = request.Description;
+                await _context.SaveChangesAsync();
+                return NoContent();
+            }
+            else
+            {
+                return NotFound();
+            }
+
+        }
+
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var incidentToDelete = await _context.Incidents.Where(x => x.Id == id).FirstOrDefaultAsync();
+            if (incidentToDelete != null)
+            {
+                _context.Incidents.Remove(incidentToDelete);
+                await _context.SaveChangesAsync();
+                return NoContent();
+            }
+            else
+            {
+                return NotFound();
+            }
+
+
+
+        }
 
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
             var incident = await _context.Incidents.Where(x => x.Id == id).FirstOrDefaultAsync();
-                       
+
             return incident != null ? Ok(incident) : NotFound();
-            
+
         }
 
 
