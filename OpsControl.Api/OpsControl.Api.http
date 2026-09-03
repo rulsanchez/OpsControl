@@ -1,0 +1,16 @@
+@OpsControl.Api_HostAddress = http://localhost:5034
+
+GET {{OpsControl.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+
+###
+POST https://localhost:7085/api/incidents
+Content-Type: application/json
+
+{
+  "title": "Incidencia creada desde la API",
+  "description": "Primera prueba del endpoint POST."
+}
+###
