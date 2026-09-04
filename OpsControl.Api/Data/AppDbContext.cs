@@ -13,5 +13,14 @@ namespace OpsControl.Api.Data
             
         }
         public DbSet<Incident> Incidents { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Incident>()
+                .Property(incident => incident.Status)
+                .HasConversion<string>()
+                .HasMaxLength(30);
+        }
     }
 }

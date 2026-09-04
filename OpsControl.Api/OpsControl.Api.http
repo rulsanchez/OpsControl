@@ -6,13 +6,21 @@ Accept: application/json
 ###
 GET https://localhost:7085/api/incidents/1
 ###
+GET https://localhost:7085/api/incidents/
+###
+GET https://localhost:7085/api/incidents?status=New
+###
 POST https://localhost:7085/api/incidents
 Content-Type: application/json
 
 {
-  "title": "Incidencia creada desde la API",
-  "description": "Primera prueba del endpoint POST."
+  
+  "title": "Servidor de producción caído",
+  "description": "El servidor no responde",
+  "impact": "High",
+  "urgency": "High"
 }
+
 ###
 PUT https://localhost:7085/api/incidents/2
 Content-Type: application/json
@@ -22,7 +30,13 @@ Content-Type: application/json
   "description": "Primera prueba del endpoint POSTmodificadisima."
 }
 ###
+PUT https://localhost:7085/api/incidents/1/start
+###
 
 DELETE https://localhost:7085/api/incidents/2
 
+###
+GET https://localhost:7085/api/incidents?status=new
+###
+GET https://localhost:7085/api/incidents?status=new&page=1&pageSize=1
 ###
