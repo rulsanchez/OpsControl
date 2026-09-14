@@ -4,7 +4,7 @@ GET {{OpsControl.Api_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
-GET https://localhost:7085/api/incidents/1
+GET https://localhost:7085/api/incidents/12
 ###
 GET https://localhost:7085/api/incidents/
 ###
@@ -15,28 +15,43 @@ Content-Type: application/json
 
 {
   
-  "title": "Servidor de producción caído",
-  "description": "El servidor no responde",
+  "title": "El bug no se corrigió",
+  "description": "El bug 45454 sigue fallando",
   "impact": "High",
   "urgency": "High"
 }
 
 ###
-PUT https://localhost:7085/api/incidents/2
+PUT https://localhost:7085/api/incidents/5
 Content-Type: application/json
 
 {
-  "title": "",
-  "description": "Primera prueba del endpoint POSTmodificadisima."
+  "title": "el bug no se corrigió en enero",
+  "description": "el bug 333434 falla modificado."
 }
 ###
 PUT https://localhost:7085/api/incidents/1/start
 ###
 
-DELETE https://localhost:7085/api/incidents/2
+###
+PUT https://localhost:7085/api/incidents/111/resolve/
+###
+
+DELETE https://localhost:7085/api/incidents/3
 
 ###
 GET https://localhost:7085/api/incidents?status=new
 ###
 GET https://localhost:7085/api/incidents?status=new&page=1&pageSize=1
+###
+
+
+GET https://localhost:7085/api/incidents
+###
+GET https://localhost:7085/api/incidents?page=1&pageSize=2
+###
+GET https://localhost:7085/api/incidents?status=Resolved
+###
+
+GET https://localhost:7085/api/incidents?page=0
 ###

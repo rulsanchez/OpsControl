@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace OpsControl.Api.DTOs
-{
+namespace OpsControl.Application.Incidents.DTOs{
     public class UpdateIncidentRequest
     {
         [Required]      

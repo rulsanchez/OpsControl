@@ -5,15 +5,15 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using OpsControl.Api.Data;
+using OpsControl.Infrastructure.Data;
 
 #nullable disable
 
 namespace OpsControl.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260903092812_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260904095056_AddIncidetnClassification")]
+    partial class AddIncidetnClassification
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -39,11 +39,20 @@ namespace OpsControl.Api.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Impact")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("int");
+
                     b.Property<string>("Status")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Urgency")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

@@ -1,0 +1,49 @@
+﻿using OpsControl.Application.Incidents.DTOs;
+using OpsControl.Application.Incidents.Repositories;
+using OpsControl.Domain.Entities;
+using OpsControl.Domain.Enums;
+
+public class CreateIncident
+{
+    private readonly IIncidentRepository _repository;
+
+
+    public CreateIncident(IIncidentRepository repository)
+    {
+        _repository = repository;
+    }
+
+    public async Task<IncidentDetailDto> ExecuteAsync(CreateIncidentRequest request)
+    {
+        // 1. Crear aquí Incident con los datos del request
+
+        Incident incident = new Incident
+        {
+            Description = request.Description,
+            Impact = request.Impact.Value,
+            Title = request.Title,
+            Urgency = request.Urgency.Value,
+            CreatedAt = DateTime.UtcNow,
+            Priority = Incident.CalculatePriority(
+        request.Impact.Value,
+        request.Urgency.Value)
+        };
+
+        await _repository.AddAsync(incident);
+
+        await _repository.SaveChangesAsync();
+
+        return new IncidentDetailDto
+        {
+            Id = incident.Id,
+            Title = incident.Title ?? string.Empty,
+            Description = incident.Description,
+            CreatedAt = incident.CreatedAt,
+            Status = incident.Status,
+            Priority = incident.Priority,
+            Impact = incident.Impact,
+            Urgency = incident.Urgency,
+            ResolvedAt = incident.ResolvedAt
+        };
+    }
+}

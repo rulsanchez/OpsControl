@@ -1,7 +1,7 @@
-﻿using OpsControl.Api.Models.Enums;
+﻿using OpsControl.Domain.Enums;
 using System.ComponentModel.DataAnnotations;
 
-namespace OpsControl.Api.DTOs
+namespace OpsControl.Application.Incidents.DTOs
 {
     public class CreateIncidentRequest
     {

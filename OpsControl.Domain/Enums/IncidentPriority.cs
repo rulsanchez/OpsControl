@@ -1,4 +1,4 @@
-﻿namespace OpsControl.Api.Models.Enums
+﻿namespace OpsControl.Domain.Enums
 {
     public enum IncidentPriority
     {

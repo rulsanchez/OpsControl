@@ -1,11 +1,14 @@
-﻿using OpsControl.Api.Models.Enums;
+﻿using OpsControl.Domain.Enums;
+using System.ComponentModel.DataAnnotations;
 
-namespace OpsControl.Api.Models
+namespace OpsControl.Domain.Entities
 {
     public class Incident
     {
         public int Id { get; set; }
-        public string? Title { get; set; }
+
+        [Required]
+        public string Title { get; set; } = string.Empty;
         public string? Description { get; set; }
         public IncidentStatus Status { get; private set; } = IncidentStatus.New;
         public DateTime CreatedAt{ get; set; }
@@ -61,7 +64,23 @@ namespace OpsControl.Api.Models
 
         }
 
+        public bool Resolve()
+        {
+            if (Status == IncidentStatus.Resolved)
+            {
+                return false;
+            }
 
+            Status = IncidentStatus.Resolved;
+            return true;
+        }
+
+
+        public void UpdateDetails(string title, string? description)
+        {
+            Title = title;
+            Description = description;
+        }
     }
 }
 

@@ -1,6 +1,6 @@
-﻿using OpsControl.Api.Models.Enums;
+﻿using OpsControl.Domain.Enums;
 
-namespace OpsControl.Api.DTOs
+namespace OpsControl.Application.Incidents.DTOs
 {
     public class IncidentListItemDto
     {

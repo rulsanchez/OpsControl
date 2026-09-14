@@ -15,4 +15,15 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Data\" />
+    <Folder Include="Models\Enums\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OpsControl.Application\OpsControl.Application.csproj" />
+    <ProjectReference Include="..\OpsControl.Domain\OpsControl.Domain.csproj" />
+    <ProjectReference Include="..\OpsControl.Infrastructure\OpsControl.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>

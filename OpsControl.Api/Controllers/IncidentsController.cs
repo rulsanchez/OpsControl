@@ -1,57 +1,46 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using OpsControl.Api.Data;
-using OpsControl.Api.DTOs;
-using OpsControl.Api.Models;
-using OpsControl.Api.Models.Enums;
+using OpsControl.Application.Incidents.DTOs;
+using OpsControl.Application.Incidents.UseCases;
+using OpsControl.Application.UseCase;
+using OpsControl.Domain.Enums;
 namespace OpsControl.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     public class IncidentsController : ControllerBase
     {
-        readonly AppDbContext _context;
+        private readonly ResolveIncident _resolveIncident;
+        private readonly GetIncidentById _getIncidentById;
+        private readonly GetIncidents _getIncidents;
+        private readonly CreateIncident _createIncident;
+        private readonly UpdateIncident _updateIncident;
+        private readonly DeleteIncident _deleteIncident;
 
-        public IncidentsController(AppDbContext context)
+        private readonly StartIncident _startIncident;
+
+        public IncidentsController(ResolveIncident resolveIncident, GetIncidentById getIncidentById, GetIncidents getIncidents
+            , CreateIncident createIncident, UpdateIncident updateIncident, DeleteIncident deleteIncident, StartIncident startIncident)
         {
-            _context = context;
+            _resolveIncident = resolveIncident;
+            _getIncidentById = getIncidentById;
+            _getIncidents = getIncidents;
+            _createIncident = createIncident;
+            _updateIncident = updateIncident;
+            _deleteIncident = deleteIncident;
+            _startIncident = startIncident;
         }
-        
+
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] IncidentStatus? status,[FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> Get([FromQuery] IncidentStatus? status, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
-            IQueryable<Incident> query = _context.Incidents;
+
             if (page < 1 || pageSize < 1 || pageSize > 100)
             {
                 return BadRequest();
             }
-            if (!status.HasValue)
-            {
-                query = query.Where(x => x.Status == status.Value);
-            }
-           
 
-            var totalCount = await query.CountAsync();
-            query = query.OrderBy(x => x.Id).Skip((page - 1) * pageSize).Take(pageSize);
-            var items = await query
-                .Select(incident => new IncidentListItemDto
-                {
-                    Id = incident.Id,
-                    Title = incident.Title ?? string.Empty,
-                    Status = incident.Status,
-                    CreatedAt = incident.CreatedAt,
-                    Priority=Incident.CalculatePriority(incident.Impact,incident.Urgency)
-                })
-                .ToListAsync();
-
-            IncidentPageResponse response = new IncidentPageResponse
-            {
-                Items = items,
-                TotalCount = totalCount,
-                Page = page,
-                PageSize = pageSize
-            };
-
+            var response = await _getIncidents.ExecuteAsync(status, page, pageSize);
             return Ok(response);
 
 
@@ -61,61 +50,34 @@ namespace OpsControl.Api.Controllers
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateIncidentRequest request)
         {
-            var incidentToUpdate = await _context.Incidents.Where(x => x.Id == id).FirstOrDefaultAsync();
-            if (incidentToUpdate != null)
-            {
-                incidentToUpdate.Title = request.Title;
-                incidentToUpdate.Description = request.Description;
-                await _context.SaveChangesAsync();
+
+            var response = await _updateIncident.ExecuteAsync(id, request);
+            if (response)
                 return NoContent();
-            }
-            else
-            {
-                return NotFound();
-            }
+            return NotFound();
+
 
         }
 
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var incidentToDelete = await _context.Incidents.Where(x => x.Id == id).FirstOrDefaultAsync();
-            if (incidentToDelete != null)
-            {
-                _context.Incidents.Remove(incidentToDelete);
-                await _context.SaveChangesAsync();
+            bool deleted = await _deleteIncident.ExecuteAsync(id);
+
+            if (deleted)
                 return NoContent();
-            }
-            else
-            {
-                return NotFound();
-            }
-
-
-
+            return NotFound();
         }
 
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var incident = await _context.Incidents.Where(x => x.Id == id)
-                .Select(cont=>new IncidentDetailDto 
-                {
-                     Id=cont.Id,
-                     Status=cont.Status,
-                     Title=cont.Title?? string.Empty,
-                     Description=cont.Description,
-                     CreatedAt=cont.CreatedAt,
-                     Impact=cont.Impact,
-                     Urgency=cont.Urgency,
-                     Priority=cont.Priority,
-                     ResolvedAt=cont.ResolvedAt
-                     
-
-                })
-                .FirstOrDefaultAsync();
-
-            return incident != null ? Ok(incident) : NotFound();
+            var incident = await _getIncidentById.ExecuteAsync(id);
+            if (incident == null)
+            {
+                return NotFound();
+            }
+            return Ok(incident);
 
         }
 
@@ -123,61 +85,43 @@ namespace OpsControl.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateIncidentRequest request)
         {
-            Incident incident = new Incident()
-            {
-                Title = request.Title,
-                Description = request.Description,
-                CreatedAt = DateTime.UtcNow,
-                Impact = request.Impact.Value,
-                Urgency=request.Urgency.Value,
-                Priority=Incident.CalculatePriority(request.Impact.Value,request.Urgency.Value)
 
-            };
-            _context.Incidents.Add(incident);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetById), new { id = incident.Id }, incident);
+
+            var createdIncident = await _createIncident.ExecuteAsync(request);
+            return CreatedAtAction(nameof(GetById), new { id = createdIncident.Id }, createdIncident);
+
         }
 
 
         [HttpPut("{id:int}/start")]
         public async Task<IActionResult> StartWork(int id)
         {
-            var getIncident = await _context.Incidents.Where(x => x.Id == id).FirstOrDefaultAsync();
-            if (getIncident==null)
-            {
+            
+            var startWork = await _startIncident.ExecuteAsync(id);
+            if (startWork == StartIncidentResult.NotFound)
                 return NotFound();
-            }
-            if(!getIncident.TryStartWork())
-            {
+            if (startWork == StartIncidentResult.InvalidState)
                 return Conflict();
-            }
-            else
-            {
-                
-                await _context.SaveChangesAsync();
-                return NoContent();
-            }
-        
+            return NoContent();
+
+
         }
         [HttpPut("{id:int}/resolve")]
 
         public async Task<IActionResult> Resolve(int id)
         {
-            var getIncident = await _context.Incidents.Where(x => x.Id == id).FirstOrDefaultAsync();
-            if (getIncident == null)
+            var result = await _resolveIncident.ExecuteAsync(id);
+            if (result == ResolveIncidentResult.NotFound)
             {
                 return NotFound();
             }
-            if (!getIncident.TryResolve())
+            if (result == ResolveIncidentResult.AlreadyResolved)
             {
-                return Conflict();
+                return Conflict("La incidencia ya estaba resuelta");
             }
-            else
-            {
 
-                await _context.SaveChangesAsync();
-                return NoContent();
-            }
+            return NoContent();
+
 
         }
 

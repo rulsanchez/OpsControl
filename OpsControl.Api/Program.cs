@@ -1,5 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using OpsControl.Api.Data;
+using OpsControl.Application.Incidents.Repositories;
+using OpsControl.Application.Incidents.UseCases;
+using OpsControl.Application.UseCase;
+using OpsControl.Infrastructure.Data;
+using OpsControl.Infrastructure.Incidents.Repositories;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +22,15 @@ builder.Services
 builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddScoped<IIncidentRepository, IncidentRepository>();
+builder.Services.AddScoped<ResolveIncident>();
+builder.Services.AddScoped<GetIncidentById>();
+builder.Services.AddScoped<GetIncidents>();
+builder.Services.AddScoped<CreateIncident>();
+builder.Services.AddScoped<UpdateIncident>();
+builder.Services.AddScoped<DeleteIncident>();
+builder.Services.AddScoped<StartIncident>();
+
 var app = builder.Build();
 
 

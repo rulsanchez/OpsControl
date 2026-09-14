@@ -1,6 +1,4 @@
-﻿using OpsControl.Api.Models;
-
-namespace OpsControl.Api.DTOs
+﻿namespace OpsControl.Application.Incidents.DTOs
 {
     public class IncidentPageResponse
     {
@@ -10,6 +8,6 @@ namespace OpsControl.Api.DTOs
 
         public int PageSize { get; set; }
 
-       
+
     }
 }

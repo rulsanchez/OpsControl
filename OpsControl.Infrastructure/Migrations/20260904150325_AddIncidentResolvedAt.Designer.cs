@@ -5,15 +5,15 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using OpsControl.Api.Data;
+using OpsControl.Infrastructure.Data;
 
 #nullable disable
 
 namespace OpsControl.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260904095056_AddIncidetnClassification")]
-    partial class AddIncidetnClassification
+    [Migration("20260904150325_AddIncidentResolvedAt")]
+    partial class AddIncidentResolvedAt
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -45,8 +45,13 @@ namespace OpsControl.Api.Migrations
                     b.Property<int>("Priority")
                         .HasColumnType("int");
 
+                    b.Property<DateTime?>("ResolvedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Status")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");

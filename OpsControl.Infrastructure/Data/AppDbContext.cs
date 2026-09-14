@@ -1,16 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using OpsControl.Api.Models;
+using OpsControl.Domain.Entities;
 
-namespace OpsControl.Api.Data
+namespace OpsControl.Infrastructure.Data
 {
-    public class AppDbContext:DbContext
+    public class AppDbContext : DbContext
     {
         /// <summary>
         /// Constructor:
         /// </summary>
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) 
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
-            
+
         }
         public DbSet<Incident> Incidents { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
