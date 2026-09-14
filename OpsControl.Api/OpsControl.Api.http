@@ -4,7 +4,7 @@ GET {{OpsControl.Api_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
-GET https://localhost:7085/api/incidents/12
+GET https://localhost:7085/api/incidents/6
 ###
 GET https://localhost:7085/api/incidents/
 ###
@@ -15,9 +15,9 @@ Content-Type: application/json
 
 {
   
-  "title": "El bug no se corrigió",
-  "description": "El bug 45454 sigue fallando",
-  "impact": "High",
+  "title": "El servidor ardió",
+  "description": "El esta en llamaradas",
+  "impact": "",
   "urgency": "High"
 }
 

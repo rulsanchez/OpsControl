@@ -6,7 +6,7 @@ public enum ResolveIncidentResult
 {
     Success,
     NotFound,
-    AlreadyResolved
+    InvalidState
 }
 
 public class ResolveIncident
@@ -27,11 +27,11 @@ public class ResolveIncident
             return ResolveIncidentResult.NotFound;
         }
 
-        var resolved = incident.Resolve();
+        var resolved = incident.TryResolve();
 
         if (!resolved)
         {
-            return ResolveIncidentResult.AlreadyResolved;
+            return ResolveIncidentResult.InvalidState;
         }
 
         await _repository.SaveChangesAsync();

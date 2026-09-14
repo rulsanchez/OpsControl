@@ -13,22 +13,19 @@ public class CreateIncident
         _repository = repository;
     }
 
-    public async Task<IncidentDetailDto> ExecuteAsync(CreateIncidentRequest request)
+    public async Task<IncidentDetailDto?> ExecuteAsync(CreateIncidentRequest request)
     {
-        // 1. Crear aquí Incident con los datos del request
-
+       
         Incident incident = new Incident
         {
-            Description = request.Description,
-            Impact = request.Impact.Value,
-            Title = request.Title,
-            Urgency = request.Urgency.Value,
-            CreatedAt = DateTime.UtcNow,
-            Priority = Incident.CalculatePriority(
-        request.Impact.Value,
-        request.Urgency.Value)
+            CreatedAt = DateTime.UtcNow
         };
+        if (!incident.UpdateDetails(request.Title, request.Description))
+        {
+            return null;
+        }
 
+        incident.ChangeImpactAndUrgency(request.Impact.Value, request.Urgency.Value);
         await _repository.AddAsync(incident);
 
         await _repository.SaveChangesAsync();

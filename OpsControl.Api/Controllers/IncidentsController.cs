@@ -52,10 +52,11 @@ namespace OpsControl.Api.Controllers
         {
 
             var response = await _updateIncident.ExecuteAsync(id, request);
-            if (response)
-                return NoContent();
-            return NotFound();
-
+            if (response==UpdateIncidentResult.InvalidTitle)
+                return BadRequest("El título no puede estar vacío.");
+            if (response == UpdateIncidentResult.NotFound)
+                return NotFound();
+            return NoContent();
 
         }
 
@@ -88,6 +89,10 @@ namespace OpsControl.Api.Controllers
 
 
             var createdIncident = await _createIncident.ExecuteAsync(request);
+            if (createdIncident == null)
+            {
+                return BadRequest("El título no puede estar vacío.");
+            }
             return CreatedAtAction(nameof(GetById), new { id = createdIncident.Id }, createdIncident);
 
         }
@@ -115,7 +120,7 @@ namespace OpsControl.Api.Controllers
             {
                 return NotFound();
             }
-            if (result == ResolveIncidentResult.AlreadyResolved)
+            if (result == ResolveIncidentResult.InvalidState)
             {
                 return Conflict("La incidencia ya estaba resuelta");
             }

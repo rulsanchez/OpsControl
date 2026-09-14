@@ -7,6 +7,12 @@ using OpsControl.Application.Incidents.Repositories;
 
 namespace OpsControl.Application.Incidents.UseCases
 {
+    public enum UpdateIncidentResult
+    {
+        Success,
+        NotFound,
+        InvalidTitle
+    }
     public class UpdateIncident
     {
         private readonly  IIncidentRepository _repository;
@@ -15,16 +21,18 @@ namespace OpsControl.Application.Incidents.UseCases
             _repository = repository;            
         }
 
-        public async Task<bool> ExecuteAsync(int id, UpdateIncidentRequest request)
+        public async Task<UpdateIncidentResult> ExecuteAsync(int id, UpdateIncidentRequest request)
         {
        
            var incidentToUpdate= await _repository.GetByIdAsync(id);
             if (incidentToUpdate==null)
-                return false;
+                return UpdateIncidentResult.NotFound;
 
-            incidentToUpdate.UpdateDetails(request.Title, request.Description);
+            if(incidentToUpdate.UpdateDetails(request.Title, request.Description)==false)
+                return UpdateIncidentResult.InvalidTitle;
+
             await _repository.SaveChangesAsync();
-            return true;
+            return UpdateIncidentResult.Success;
 
         }
     }

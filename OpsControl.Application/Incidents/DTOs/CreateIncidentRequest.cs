@@ -9,9 +9,11 @@ namespace OpsControl.Application.Incidents.DTOs
         public string? Title { get; set; }
         public string? Description { get; set; }
         [Required]
+        [EnumDataType(typeof(IncidentImpact))]
         public IncidentImpact? Impact { get; set; }
 
         [Required]
+        [EnumDataType(typeof(IncidentUrgency))]
         public IncidentUrgency? Urgency { get; set; }
     }
 }

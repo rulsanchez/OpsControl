@@ -8,17 +8,18 @@ namespace OpsControl.Domain.Entities
         public int Id { get; set; }
 
         [Required]
-        public string Title { get; set; } = string.Empty;
+        public string Title { get; private set; } = string.Empty;
         public string? Description { get; set; }
         public IncidentStatus Status { get; private set; } = IncidentStatus.New;
-        public DateTime CreatedAt{ get; set; }
-        public IncidentImpact Impact { get; set; }
-        public IncidentUrgency Urgency { get; set; }
-        public DateTime? ResolvedAt { get; private set; }
+        public DateTime CreatedAt { get; set; }
+        public IncidentImpact Impact { get; private set; }
+        public IncidentUrgency Urgency { get; private set; }
         /// <summary>
         /// Prioridad no la enviará el usuario, se calculárá con lógica
         /// </summary>
-        public IncidentPriority Priority { get; set; }
+
+        public IncidentPriority Priority { get; private set; }
+        public DateTime? ResolvedAt { get; private set; }
 
         /// <summary>
         /// calcula la prioridad 
@@ -26,7 +27,7 @@ namespace OpsControl.Domain.Entities
         /// <param name="impact"></param>
         /// <param name="urgency"></param>
         /// <returns></returns>
-        public static IncidentPriority CalculatePriority(IncidentImpact impact,IncidentUrgency urgency)
+        public static IncidentPriority CalculatePriority(IncidentImpact impact, IncidentUrgency urgency)
         {
 
             if (impact == IncidentImpact.High && urgency == IncidentUrgency.High)
@@ -35,13 +36,13 @@ namespace OpsControl.Domain.Entities
                 return IncidentPriority.High;
             if (impact == IncidentImpact.Low && urgency == IncidentUrgency.Low)
                 return IncidentPriority.Low;
-           
-                return IncidentPriority.Medium;
+
+            return IncidentPriority.Medium;
         }
 
-        public bool TryStartWork() 
+        public bool TryStartWork()
         {
-            if(Status==IncidentStatus.New)
+            if (Status == IncidentStatus.New)
             {
                 Status = IncidentStatus.InProgress;
                 return true;
@@ -55,7 +56,7 @@ namespace OpsControl.Domain.Entities
 
         public bool TryResolve()
         {
-            if (Status != IncidentStatus.InProgress)                
+            if (Status != IncidentStatus.InProgress)
                 return false;
 
             Status = IncidentStatus.Resolved;
@@ -64,23 +65,24 @@ namespace OpsControl.Domain.Entities
 
         }
 
-        public bool Resolve()
-        {
-            if (Status == IncidentStatus.Resolved)
-            {
-                return false;
-            }
 
-            Status = IncidentStatus.Resolved;
+
+        public bool UpdateDetails(string title, string? description)
+        {
+            if (string.IsNullOrWhiteSpace(title))
+                return false;
+            Title = title;
+            Description = description;
             return true;
         }
 
-
-        public void UpdateDetails(string title, string? description)
+        public void ChangeImpactAndUrgency(IncidentImpact impact, IncidentUrgency urgency)
         {
-            Title = title;
-            Description = description;
+            Impact = impact;
+            Urgency = urgency;
+            Priority = CalculatePriority(impact, urgency);
         }
+
     }
 }
 
