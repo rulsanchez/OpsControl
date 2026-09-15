@@ -31,6 +31,20 @@ builder.Services.AddScoped<UpdateIncident>();
 builder.Services.AddScoped<DeleteIncident>();
 builder.Services.AddScoped<StartIncident>();
 
+
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("ReactLocal", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
+
+
 var app = builder.Build();
 
 
@@ -43,6 +57,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("ReactLocal");
 
 app.UseAuthorization();
 

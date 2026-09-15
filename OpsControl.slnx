@@ -1,6 +1,7 @@
 <Solution>
   <Project Path="OpsControl.Api/OpsControl.Api.csproj" />
   <Project Path="OpsControl.Application/OpsControl.Application.csproj" Id="d0930d2e-887e-4b5f-8a83-02dc445b6479" />
+  <Project Path="OpsControl.Domain.Tests/OpsControl.Domain.Tests.csproj" Id="762e8ca7-d10e-4f3c-a433-f11d211eb6e8" />
   <Project Path="OpsControl.Domain/OpsControl.Domain.csproj" Id="4947555c-7c84-469e-96cf-f0913adb88c5" />
   <Project Path="OpsControl.Infrastructure/OpsControl.Infrastructure.csproj" Id="2c215f01-0bd1-487e-962a-e3d817a6494d" />
 </Solution>
