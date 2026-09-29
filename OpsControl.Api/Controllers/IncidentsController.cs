@@ -32,7 +32,11 @@ namespace OpsControl.Api.Controllers
             _startIncident = startIncident;
             _getIncidentSummary = getIncidentSummary;
         }
-
+        [HttpGet("ping")]
+        public IActionResult Ping()
+        {
+            return Ok("OpsControl API funcionando");
+        }
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] IncidentStatus? status, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
