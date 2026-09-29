@@ -237,5 +237,32 @@ td {
         color: #0f172a;
     }
 
+/* Más separación entre secciones */
+main > section {
+    margin-bottom: 32px;
+    padding: 24px;
+}
 
-    
+/* Títulos más visibles */
+main h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #172554;
+    border-left: 5px solid #2563eb;
+    padding-left: 12px;
+    margin-top: 0;
+    margin-bottom: 24px;
+}
+
+/* Separación del título de la lista */
+main > h2 {
+    margin-top: 36px;
+}
+
+
+main > section {
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    background-color: white;
+    box-shadow: 0 3px 10px rgba(15, 23, 42, 0.05);
+}

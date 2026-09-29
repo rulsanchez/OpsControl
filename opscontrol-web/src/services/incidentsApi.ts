@@ -4,7 +4,7 @@ import type {
     IncidentSummaryResponse
 } from '../types/incident'
 
-const API_URL = 'https://localhost:7085/api/incidents'
+const API_URL = import.meta.env.VITE_API_URL
 
 
 export async function startIncidentRequest(id: number) {
