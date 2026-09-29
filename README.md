@@ -8,6 +8,10 @@ OpsControl is a full-stack web application for managing operational incidents th
 
 The project was built as a practical implementation of a modern .NET architecture, separating business logic, application use cases, infrastructure and presentation concerns.
 
+<img width="1301" height="666" alt="resumenIncidencias" src="https://github.com/user-attachments/assets/f4b5dd8d-e517-4e0d-baed-d817ae73ac1b" />
+<img width="1273" height="648" alt="tablaIncidenciasYDetalle" src="https://github.com/user-attachments/assets/4a1f763e-b159-453b-9247-e2654e69e38f" />
+<img width="1208" height="648" alt="nuevaIncidencia" src="https://github.com/user-attachments/assets/39310e30-1084-4068-9e31-7fe441ef4916" />
+
 ---
 
 ## 🚀 Live Demo
