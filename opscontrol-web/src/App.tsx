@@ -1,14 +1,19 @@
 
 import './App.css'
+
 import { useState } from 'react'
 
+import {
+    startIncidentRequest,
+    resolveIncidentRequest,
+    getIncidentsRequest,
+    createIncidentRequest,
+    getIncidentSummaryRequest
+} from './services/incidentsApi'
 
-type Incident = {
-    id: number
-    title: string
-    status: string
-    priority: string
-}
+import type { Incident,IncidentSummaryResponse } from './types/incident'
+
+import PriorityBadge from './components/PriorityBadge'
 function App() {
 
 
@@ -41,39 +46,56 @@ function App() {
     const pageSize = 3
 
 
+    const [summary, setSummary] =
+        useState<IncidentSummaryResponse | null>(null)
 
-    async function loadIncidents(requestedPage = 1)  {
-        setIsLoading(true)
+
+
+    async function loadSummary() {
+
+
         setError(null)
         try {
-            //await new Promise(resolve => setTimeout(resolve, 2000))
-            const url =
-                `https://localhost:7085/api/incidents?page=${requestedPage}&pageSize=${pageSize}` +
-                (statusFilter === '' ? '' : `&status=${statusFilter}`)
+            const data = await getIncidentSummaryRequest()
+            setSummary(data);
+        }
+        catch(error) {
+            setError(
+                error instanceof Error
+                    ? error.message
+                    : 'No se pudo cargar el resumen'
+            )
+        }
+    }
+    async function loadIncidents(requestedPage = 1) {
+        setIsLoading(true)
+        setError(null)
 
-            const response = await fetch(url)
+        try {
+            const data = await getIncidentsRequest(
+                statusFilter,
+                requestedPage,
+                pageSize
+            )
 
-            if (!response.ok) {
-                setError('No se pudieron cargar las incidencias')
-                return
-            }
-
-            const data = await response.json()
             if (data.items.length === 0 && requestedPage > 1) {
                 await loadIncidents(requestedPage - 1)
                 return
             }
+
             setIncidents(data.items)
             setTotalCount(data.totalCount)
             setPage(data.page)
             setSelectedId(null)
-        } catch {
-            setError('No se pudo conectar con la API')
-        }
-        finally {
+        } catch (error) {
+            setError(
+                error instanceof Error
+                    ? error.message
+                    : 'No se pudieron cargar las incidencias'
+            )
+        } finally {
             setIsLoading(false)
         }
-
     }
 
 
@@ -81,19 +103,14 @@ function App() {
         setError(null)
 
         try {
-            const response = await fetch(
-                `https://localhost:7085/api/incidents/${id}/start`,
-                { method: 'PUT' }
-            )
-
-            if (!response.ok) {
-                setError('No se pudo iniciar la incidencia')
-                return
-            }
-
+            await startIncidentRequest(id)
             await loadIncidents(page)
-        } catch {
-            setError('No se pudo conectar con la API')
+        } catch (error) {
+            setError(
+                error instanceof Error
+                    ? error.message
+                    : 'No se pudo iniciar la incidencia'
+            )
         }
     }
 
@@ -101,75 +118,87 @@ function App() {
         setError(null)
 
         try {
-            const response = await fetch(
-                `https://localhost:7085/api/incidents/${id}/resolve`,
-                { method: 'PUT' }
-            )
-
-            if (!response.ok) {
-                setError('No se pudo resolver la incidencia')
-                return
-            }
-
+            await resolveIncidentRequest(id)
             await loadIncidents(page)
-        } catch {
-            setError('No se pudo conectar con la API')
+        } catch (error) {
+            setError(
+                error instanceof Error
+                    ? error.message
+                    : 'No se pudo resolver la incidencia'
+            )
         }
     }
 
     async function createIncident() {
         setError(null)
         setSuccessMessage(null)
+
         if (newTitle.trim() === '') {
             setError('Escribe un título para la incidencia')
             return
         }
 
         setIsCreating(true)
-        try {
-            const response = await fetch(
-                'https://localhost:7085/api/incidents',
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        title: newTitle.trim(),
-                        description: newDescription,
-                        impact: newImpact,
-                        urgency: newUrgency
-                    })
-                }
-            )
 
-            // if (!response.ok) {
-            //     setError('No se pudo crear la incidencia')
-            //     return
-            // }
-            if (!response.ok) {
-                const detail = await response.text()
-                setError(`Error ${response.status}: ${detail}`)
-                return
-            }
+        try {
+            await createIncidentRequest({
+                title: newTitle.trim(),
+                description: newDescription,
+                impact: newImpact,
+                urgency: newUrgency
+            })
+
             setSuccessMessage('Incidencia creada correctamente')
             setNewTitle('')
             setNewDescription('')
+
             await loadIncidents()
-        } catch {
-            setError('No se pudo conectar con la API')
-        }
-        finally {
+        } catch (error) {
+            setError(
+                error instanceof Error
+                    ? error.message
+                    : 'No se pudo crear la incidencia'
+            )
+        } finally {
             setIsCreating(false)
         }
     }
-
 
     return (
         <main>
             <h1>OpsControl</h1>
             <p>Gestión de incidencias</p>
+            <section>
+                <h2>Resumen de incidencias</h2>
 
+                <button onClick={loadSummary}>
+                    Actualizar resumen
+                </button>
+
+                {summary && (
+                    <div className="summary-grid">
+                        <p className="summary-card">
+                            Nuevas: 
+                            <strong>{summary.newCount}</strong>
+                        </p>
+                        <p className="summary-card">
+                            En curso:
+                            <strong>{summary.inProgressCount}</strong>
+                        </p>
+
+                        <p className="summary-card">
+                            Resueltas:
+                            <strong>{summary.resolvedCount}</strong>
+                        </p>
+                        <p className="summary-card">
+                            Críticas pendientes:
+                            <strong>{summary.criticalPendingCount}</strong>
+                        </p>
+
+                       
+                    </div>
+                )}
+            </section>
 
             <section className="create-incident">
                 <h2>Nueva incidencia</h2>
@@ -287,9 +316,7 @@ function App() {
                             <td>{incident.title}</td>
                             <td>{incident.status}</td> 
                             <td>
-                                <span className={incident.priority === 'Critical' ? 'priority-critical' : ''}>
-                                    {incident.priority}
-                                </span>
+                                <PriorityBadge priority={incident.priority} />
                             </td>
                             <td>
                                 <button
@@ -328,6 +355,9 @@ function App() {
                 <section className='detailcss'>
                     <h2>Detalle de la incidencia</h2>
                     <p>{selectedIncident.title}</p>
+                    <p>
+                        Prioridad: <PriorityBadge priority={selectedIncident.priority} />
+                    </p>
                     <p>Estado: {selectedIncident.status}</p>
                     {selectedIncident.status === 'Resolved' && (
                         <p>Esta incidencia ya está cerrada</p>

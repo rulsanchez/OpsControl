@@ -30,6 +30,7 @@ builder.Services.AddScoped<CreateIncident>();
 builder.Services.AddScoped<UpdateIncident>();
 builder.Services.AddScoped<DeleteIncident>();
 builder.Services.AddScoped<StartIncident>();
+builder.Services.AddScoped<GetIncidentSummary>();
 
 
 

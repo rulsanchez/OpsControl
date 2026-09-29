@@ -16,4 +16,6 @@ public interface IIncidentRepository
 
     void Remove(Incident incident);
 
+    Task<IncidentSummaryResponse> GetSummaryAsync();
+
 }

@@ -53,4 +53,25 @@ public class IncidentRepository : IIncidentRepository
     {
          _context.Incidents.Remove(incident);
     }
+
+
+    public async Task<IncidentSummaryResponse> GetSummaryAsync()
+    {
+        return new IncidentSummaryResponse
+        {
+            NewCount = await _context.Incidents
+                .CountAsync(x => x.Status == IncidentStatus.New),
+
+            InProgressCount = await _context.Incidents
+                .CountAsync(x => x.Status == IncidentStatus.InProgress),
+
+            ResolvedCount = await _context.Incidents
+                .CountAsync(x => x.Status == IncidentStatus.Resolved),
+
+            CriticalPendingCount = await _context.Incidents
+                .CountAsync(x =>
+                    x.Priority == IncidentPriority.Critical &&
+                    x.Status != IncidentStatus.Resolved)
+        };
+    }
 }

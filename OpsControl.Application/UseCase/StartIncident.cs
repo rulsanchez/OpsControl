@@ -29,12 +29,6 @@ namespace OpsControl.Application.Incidents.UseCases
 
             await _incidentRepository.SaveChangesAsync();
             return StartIncidentResult.Success;
-
-
-
-
-
         }
-
     }
 }

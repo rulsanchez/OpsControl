@@ -30,9 +30,10 @@ Content-Type: application/json
   "description": "el bug 333434 falla modificado."
 }
 ###
-PUT https://localhost:7085/api/incidents/1/start
+PUT https://localhost:7085/api/incidents/6/start
 ###
-
+###
+GET https://localhost:7085/api/incidents/summary
 ###
 PUT https://localhost:7085/api/incidents/111/resolve/
 ###

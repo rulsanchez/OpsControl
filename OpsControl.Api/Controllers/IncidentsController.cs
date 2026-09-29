@@ -16,11 +16,12 @@ namespace OpsControl.Api.Controllers
         private readonly CreateIncident _createIncident;
         private readonly UpdateIncident _updateIncident;
         private readonly DeleteIncident _deleteIncident;
-
         private readonly StartIncident _startIncident;
+        private readonly GetIncidentSummary _getIncidentSummary;
 
         public IncidentsController(ResolveIncident resolveIncident, GetIncidentById getIncidentById, GetIncidents getIncidents
-            , CreateIncident createIncident, UpdateIncident updateIncident, DeleteIncident deleteIncident, StartIncident startIncident)
+            , CreateIncident createIncident, UpdateIncident updateIncident, DeleteIncident deleteIncident, StartIncident startIncident,
+            GetIncidentSummary getIncidentSummary)
         {
             _resolveIncident = resolveIncident;
             _getIncidentById = getIncidentById;
@@ -29,6 +30,7 @@ namespace OpsControl.Api.Controllers
             _updateIncident = updateIncident;
             _deleteIncident = deleteIncident;
             _startIncident = startIncident;
+            _getIncidentSummary = getIncidentSummary;
         }
 
         [HttpGet]
@@ -45,7 +47,13 @@ namespace OpsControl.Api.Controllers
 
 
         }
+        [HttpGet("summary")]
+        public async Task<IActionResult> GetSummary ()
+        {
+            var result=await _getIncidentSummary.ExecuteAsync();
+            return Ok(result);
 
+        }
 
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateIncidentRequest request)
@@ -108,9 +116,9 @@ namespace OpsControl.Api.Controllers
             if (startWork == StartIncidentResult.InvalidState)
                 return Conflict();
             return NoContent();
-
-
         }
+
+
         [HttpPut("{id:int}/resolve")]
 
         public async Task<IActionResult> Resolve(int id)

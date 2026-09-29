@@ -213,3 +213,29 @@ td {
     display: inline-block;
     font-weight: bold;
 }
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.summary-card {
+    margin: 0;
+    padding: 20px;
+    border: 1px solid #dbe3ef;
+    border-radius: 10px;
+    background: #f8fafc;
+    color: #475569;
+    font-size: 14px;
+}
+
+    .summary-card strong {
+        display: block;
+        margin-top: 8px;
+        font-size: 32px;
+        color: #0f172a;
+    }
+
+
+    
